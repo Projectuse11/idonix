@@ -65,9 +65,7 @@
           : root, {%- endif %}
         .color-{{ scheme.id }}{
           --color-background: {{ scheme.settings.background.red }}
-          , {{ scheme.settings.background.green }}
-          , {{ scheme.settings.background.blue }}
-          ;
+          , {{ scheme.settings.background.green }}, {{ scheme.settings.background.blue }};
           {% if scheme.settings.background_gradient != empty %}
             --gradient-background: {{ scheme.settings.background_gradient }}
             ;
@@ -76,45 +74,25 @@
             ;
           {% endif %}
           --color-foreground: {{ scheme.settings.text.red }}
-          , {{ scheme.settings.text.green }}
-          , {{ scheme.settings.text.blue }}
-          ;
+          , {{ scheme.settings.text.green }}, {{ scheme.settings.text.blue }};
           --color-shadow: {{ scheme.settings.shadow.red }}
-          , {{ scheme.settings.shadow.green }}
-          , {{ scheme.settings.shadow.blue }}
-          ;
+          , {{ scheme.settings.shadow.green }}, {{ scheme.settings.shadow.blue }};
           --color-button: {{ scheme.settings.button.red }}
-          , {{ scheme.settings.button.green }}
-          , {{ scheme.settings.button.blue }}
-          ;
+          , {{ scheme.settings.button.green }}, {{ scheme.settings.button.blue }};
           --color-button-text: {{ scheme.settings.button_label.red }}
-          , {{ scheme.settings.button_label.green }}
-          , {{ scheme.settings.button_label.blue }}
-          ;
+          , {{ scheme.settings.button_label.green }}, {{ scheme.settings.button_label.blue }};
           --color-secondary-button: {{ scheme.settings.background.red }}
-          , {{ scheme.settings.background.green }}
-          , {{ scheme.settings.background.blue }}
-          ;
+          , {{ scheme.settings.background.green }}, {{ scheme.settings.background.blue }};
           --color-secondary-button-text: {{ scheme.settings.secondary_button_label.red }}
-          , {{ scheme.settings.secondary_button_label.green }}
-          , {{ scheme.settings.secondary_button_label.blue }}
-          ;
+          , {{ scheme.settings.secondary_button_label.green }}, {{ scheme.settings.secondary_button_label.blue }};
           --color-link: {{ scheme.settings.secondary_button_label.red }}
-          , {{ scheme.settings.secondary_button_label.green }}
-          , {{ scheme.settings.secondary_button_label.blue }}
-          ;
+          , {{ scheme.settings.secondary_button_label.green }}, {{ scheme.settings.secondary_button_label.blue }};
           --color-badge-foreground: {{ scheme.settings.text.red }}
-          , {{ scheme.settings.text.green }}
-          , {{ scheme.settings.text.blue }}
-          ;
+          , {{ scheme.settings.text.green }}, {{ scheme.settings.text.blue }};
           --color-badge-background: {{ scheme.settings.background.red }}
-          , {{ scheme.settings.background.green }}
-          , {{ scheme.settings.background.blue }}
-          ;
+          , {{ scheme.settings.background.green }}, {{ scheme.settings.background.blue }};
           --color-badge-border: {{ scheme.settings.text.red }}
-          , {{ scheme.settings.text.green }}
-          , {{ scheme.settings.text.blue }}
-          ;
+          , {{ scheme.settings.text.green }}, {{ scheme.settings.text.blue }};
           --payment-terms-background-color: rgb({{ scheme.settings.background.rgb }});
         }
       {% endfor %}
@@ -275,10 +253,8 @@
         --spacing-sections-desktop: {{ settings.spacing_sections }}
         px;
         --spacing-sections-mobile: {% if settings.spacing_sections < 24 %}
-          {{ settings.spacing_sections }}
-        {% else %}
-          {{ settings.spacing_sections | times: 0.7 | round | at_least: 20 }}
-        {% endif %}px;
+          {{ settings.spacing_sections }}{% else %}
+          {{ settings.spacing_sections | times: 0.7 | round | at_least: 20 }}{% endif %}px;
 
         --grid-desktop-vertical-spacing: {{ settings.spacing_grid_vertical }}
         px;
@@ -310,12 +286,10 @@
         --buttons-radius: {{ settings.buttons_radius }}
         px;
         --buttons-radius-outset: {% if settings.buttons_radius > 0 %}
-          {{ settings.buttons_radius | plus: settings.buttons_border_thickness }}
-        {% else %}
+          {{ settings.buttons_radius | plus: settings.buttons_border_thickness }}{% else %}
           0{% endif %}px;
         --buttons-border-width: {% if settings.buttons_border_opacity > 0 %}
-          {{ settings.buttons_border_thickness }}
-        {% else %}
+          {{ settings.buttons_border_thickness }}{% else %}
           0{% endif %}px;
         --buttons-border-opacity: {{ settings.buttons_border_opacity | divided_by: 100.0 }}
         ;
@@ -345,16 +319,14 @@
         --inputs-shadow-horizontal-offset: {{ settings.inputs_shadow_horizontal_offset }}
         px;
         --inputs-margin-offset: {% if settings.inputs_shadow_vertical_offset != 0 and settings.inputs_shadow_opacity > 0 %}
-          {{ settings.inputs_shadow_vertical_offset | abs }}
-        {% else %}
+          {{ settings.inputs_shadow_vertical_offset | abs }}{% else %}
           0{% endif %}px;
         --inputs-shadow-vertical-offset: {{ settings.inputs_shadow_vertical_offset }}
         px;
         --inputs-shadow-blur-radius: {{ settings.inputs_shadow_blur }}
         px;
         --inputs-radius-outset: {% if settings.inputs_radius > 0 %}
-          {{ settings.inputs_radius | plus: settings.inputs_border_thickness }}
-        {% else %}
+          {{ settings.inputs_radius | plus: settings.inputs_border_thickness }}{% else %}
           0{% endif %}px;
 
         --variant-pills-radius: {{ settings.variant_pills_radius }}
@@ -442,7 +414,63 @@
   </head>
 
   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
-    <h1>This Works. Theme Pushed Successfully!</h1>
-    {{ content_for_layout }}
+    <a class="skip-to-content-link button visually-hidden" href="#MainContent">
+      {{ 'accessibility.skip_to_text' | t }}
+    </a>
+
+    {%- if settings.cart_type == 'drawer' -%}
+      {%- render 'cart-drawer' -%}
+    {%- endif -%}
+
+    {% sections 'header-group' %}
+
+    <main
+      id="MainContent"
+      class="content-for-layout focus-none"
+      role="main"
+      tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    <ul hidden>
+      <li id="a11y-refresh-page-message">{{ 'accessibility.refresh_page' | t }}</li>
+      <li id="a11y-new-window-message">{{ 'accessibility.link_messages.new_window' | t }}</li>
+    </ul>
+
+    <script>
+      window.shopUrl = '{{ request.origin }}';
+      window.routes = {
+        cart_add_url: '{{ routes.cart_add_url }}',
+        cart_change_url: '{{ routes.cart_change_url }}',
+        cart_update_url: '{{ routes.cart_update_url }}',
+        cart_url: '{{ routes.cart_url }}',
+        predictive_search_url: '{{ routes.predictive_search_url }}'
+      };
+
+      window.cartStrings = {
+        error: `{{ 'sections.cart.cart_error' | t }}`,
+        quantityError: `{{ 'sections.cart.cart_quantity_error_html' | t: quantity: '[quantity]' }}`
+      };
+
+      window.variantStrings = {
+        addToCart: `{{ 'products.product.add_to_cart' | t }}`,
+        soldOut: `{{ 'products.product.sold_out' | t }}`,
+        unavailable: `{{ 'products.product.unavailable' | t }}`,
+        unavailable_with_option: `{{ 'products.product.value_unavailable' | t: option_value: '[value]' }}`
+      };
+
+      window.accessibilityStrings = {
+        imageAvailable: `{{ 'products.product.media.image_available' | t: index: '[index]' }}`,
+        shareSuccess: `{{ 'general.share.success_message' | t }}`,
+        pauseSlideshow: `{{ 'sections.slideshow.pause_slideshow' | t }}`,
+        playSlideshow: `{{ 'sections.slideshow.play_slideshow' | t }}`
+      };
+    </script>
+
+    {%- if settings.predictive_search_enabled -%}
+      <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
   </body>
 </html>
